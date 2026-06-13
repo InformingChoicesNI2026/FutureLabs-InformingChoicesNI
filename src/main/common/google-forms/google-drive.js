@@ -50,8 +50,11 @@ export async function listGoogleForms(pageToken) {
     for (const file of response.data.files) {
       if (file.thumbnailLink) {
         const thumbnail = await fetchThumbnailForFile(client, file.thumbnailLink);
-        const base64 = thumbnail.bytes.toString('base64');
-        file.thumbnailBase64 = `data:${thumbnail.mimeType};base64,${base64}`;
+        // A failed thumbnail fetch returns null; skip it instead of breaking the whole list.
+        if (thumbnail?.bytes) {
+          const base64 = thumbnail.bytes.toString('base64');
+          file.thumbnailBase64 = `data:${thumbnail.mimeType};base64,${base64}`;
+        }
       }
     }
   }

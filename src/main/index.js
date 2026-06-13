@@ -28,6 +28,7 @@ import {
   openGoogleFormInBrowserById
 } from './common/google-forms/google-forms.js';
 import {
+  cancelOAuthFlow,
   ensureAuthenticated,
   getUserProfile,
   isUserAuthenticated,
@@ -678,7 +679,8 @@ ipcMain.handle('googleAuth:signOut', async () => {
 });
 ipcMain.handle('googleAuth:cancelOAuthFlow', async () => {
   try {
-    return await cancelOAuthFlow();
+    cancelOAuthFlow();
+    return { ok: true };
   } catch (err) {
     logger.error('googleAuth:cancelOAuthFlow failed', err);
     return { ok: false, error: err.message };

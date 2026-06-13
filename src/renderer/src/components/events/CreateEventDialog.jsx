@@ -44,6 +44,11 @@ export default function CreateEventDialog({
         name,
         description: newEventDescription.trim() || null,
       });
+      // Main-process handlers report failures as { ok: false, error } instead of throwing.
+      if (created && !Array.isArray(created) && created.ok === false) {
+        setError("Failed to create event. Make sure the event name is unique.");
+        return;
+      }
       const createdEvent = Array.isArray(created) ? created[0] : created;
       if (onCreated) {
         onCreated(createdEvent || { name });

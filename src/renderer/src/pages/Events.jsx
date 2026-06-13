@@ -54,9 +54,11 @@ export default function Events() {
         setActionsMenuOpened(true);
     }
 
-    const dataGridRows = useMemo(() => 
+    const dataGridRows = useMemo(() =>
     {
         if (!events) return [];
+
+        const needle = filterValue.toLowerCase();
 
         return events
             .map(event => ({
@@ -67,11 +69,13 @@ export default function Events() {
                 tags: event.tags,
                 surveys: event.surveyCount
             }))
-            .filter(event => 
-                event.name.toLowerCase().includes(filterValue.toLowerCase()) 
-                || event.tags.toLowerCase().includes(filterValue.toLowerCase())
-                || event.description.toLowerCase().includes(filterValue.toLowerCase())) 
-            || [];
+            .filter(event => {
+                const name = String(event.name || '').toLowerCase();
+                // tags is an array; description may be null.
+                const tags = Array.isArray(event.tags) ? event.tags.join(' ').toLowerCase() : '';
+                const description = String(event.description || '').toLowerCase();
+                return name.includes(needle) || tags.includes(needle) || description.includes(needle);
+            });
     }, [events, filterValue]);
 
     useEffect(() => {
